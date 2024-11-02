@@ -1,39 +1,174 @@
-# Space Invaders
+# 🎮 Space Invaders OS
 
-To run this project you need:
+## 📖 About
+A Space Invaders-style console game that serves as a practical demonstration of core Operating Systems concepts. Built entirely in C, this project implements fundamental OS mechanisms like scheduling, memory management, and multithreading within the context of a classic arcade game.
 
-1. GCC Installed (recommended version is `10.2.1 20210110` but it should not matter which version you use).
-2. Open a terminal in the same directory of the `main.c` file.
-3. Run the command:
-    ```bash
-    gcc -o ng main.c -pthread && ./ng
-    ```
+## 🚀 Quick Start
 
-If you are running the project in WSL you should know that:
+### 🛠️ Prerequisites
+- GCC Compiler (recommended version: 10.2.1 or higher)
+- POSIX-compliant system (Linux/Unix)
+- pthread library
 
-1. The distro you choose will not affect the performance of this project. It was tested in ArchLinux and Debian.
-2. Some distros use only one CPU thread and 512MB of RAM by default, this will make the project to run slower since it uses multiple threads. To fix this:
-    
-    1. Go to your `C:\Users\<YourUser>` folder
-    1. Create or edit a file called `.wslconfig`
-    1. Paste this inside:
+### ⚙️ Installation
+1. 📥 Clone the repository:
+```bash
+git clone https://github.com/yourusername/space-invaders-os
+```
+2. 📂 Navigate to the project directory:
+```bash
+cd space-invaders-os
+```
+3. ⚡ Compile and run:
+```css
+gcc -o ng main.c -pthread && ./ng
+```
 
-        ```
-        [wsl2]
-        memory=8GB
-        processors=4
-        ```
-    
-    1. Make a `wsl --shutdown` in a CMD before opening the WSL console again.
+### 🎮 Controls
+- `A` - Move left
+- `D` - Move right
+- `W` - Toggle firing mode
+- `Space` - Stop movement
 
-1. If the game blinks too much while running consider using another terminal. The smoother experience was found to be in the VSCode integrated terminal.
+### 🖥️ WSL Configuration
+If you're running the game in Windows Subsystem for Linux (WSL):
 
-## About this project
+1. 📝 Create/edit `.wslconfig` in `C:\Users\<YourUser>` and write in it:
+```bash
+[wsl2]
+memory=8GB
+processors=4
+```
 
-The project has a major focus in the code so the graphic (in console) are very minimalist. To achieve the goal of putting all of the Operative Systems's course in this project we made:
+2. 🔄 Restart WSL:
+```bash
+wsl --shutdown
+```
 
-1. An MLFQ algorith for the enemies movement: the game generates enemies following a stage approach, all this enemies are then put into an MLFQ scheduler. The time this algorithm uses to update priorities and so is the time moving, so each time the algorithm returns an enemy, is this the one that will move on the screen. This causes interesting behaviors when there is a large number of enemies in game.
-1. Multithreading: the enemies, the bullets, the global timer, the collisions and the UI are running in separated threads.
-1. File management: the records of the game are stored in a file in the hard drive of the computer. Only the top 10 records will be kept.
-1. Memory: the game replaces the use of the `malloc(size)` and `free(ptr*)` functions by using a custom implementation. For this, a `char` array is used to simulate the memory of the program, and the functions `p_malloc(size)` and `p_free(ptr*)` (the 'p' stands for 'personalized') are defined. Each call to `p_malloc(size)` seeks in a free-list Data Structure for an available memory block using the next-fit policy and returns a pointer to it. When `p_free(ptr*)` is called, the corresponding memory block is released. The game will display the memory usage in real time.
-    
+💡 For optimal performance, use VSCode's integrated terminal to minimize screen flickering.
+
+
+## 🎯 Features
+
+### 🔄 Multi-Level Feedback Queue (MLFQ)
+The game implements a sophisticated MLFQ scheduler to manage enemy movement and behavior:
+
+#### 🎮 Core Components
+- Three priority queues (High, Medium, Low)
+- Dynamic priority adjustment
+- Anti-starvation mechanism
+- Configurable quantum and update times
+
+#### ⚙️ Technical Details
+- Update Time: 20 units
+- Time Slice (Quantum): 8 units
+- Priority degradation based on execution time
+- Periodic priority boost to prevent starvation
+
+#### 🛠️ Implementation
+- Enemies start in high priority queue
+- Movement time tracking per enemy
+- Priority decreases as execution time increases
+- Periodic reset of all enemies to high priority
+
+### 🧵 Multithreading System
+The game utilizes multiple threads to handle different aspects of gameplay:
+
+#### 🎯 Main Threads
+- 🎮 Game Loop Thread: Main game state and rendering
+- 👾 Enemy Manager Thread: MLFQ scheduling and enemy updates
+- 💥 Collision Detection Thread: Hit detection and resolution
+- ⏲️ Timer Thread: Game time management
+- 🔫 Bullet Management Thread: Projectile updates
+
+#### 🔐 Synchronization
+- Mutex locks for shared resource access
+- Thread-safe memory operations
+- Controlled thread termination
+- Race condition prevention
+
+### 🗃️ Custom Memory Management
+Implementation of a custom memory management system:
+
+#### 🔧 Features
+- 1MB (1 << 20) simulated memory space
+- Next-Fit allocation policy
+- Block metadata management
+- Memory fragmentation handling
+
+#### 🧱 Memory Block Structure
+- Size tracking
+- Free/Used status
+- Previous/Next block pointers
+- Coalescing of adjacent free blocks
+
+#### ⚡ Memory Operations
+- `p_malloc()`: Custom memory allocation
+- `p_free()`: Custom memory deallocation
+- Real-time memory usage monitoring
+- Memory state visualization
+
+### 📁 File System
+Implementation of a persistent record system:
+
+#### 📊 Record Management
+- Top 10 high scores tracking
+- Score-based sorting
+- Persistent storage in files
+- Structured record format
+
+#### 📈 Record Data
+- Player score
+- Game duration
+- Stage reached
+- Automatic updates
+
+#### 🗄️ File Operations
+- Binary file handling
+- Record sorting and filtering
+- Atomic file operations
+- Error handling and validation
+
+### 🎲 Game Mechanics
+
+#### 👾 Enemy Types
+The game features 10 different enemy types with increasing difficulty:
+- Basic enemies (Type 1-3): Low HP, straight movement
+- Advanced enemies (Type 4-6): Medium HP, zigzag movement
+- Elite enemies (Type 7-8): High HP, complex movement
+- Boss enemies (Type 9-10): Maximum HP, advanced patterns
+
+#### 🌟 Stage System
+- Progressive difficulty increase
+- Enemy count grows with stages
+- Mixed enemy type spawning
+- Dynamic spawn patterns
+
+#### ⚔️ Combat System
+- Player projectile management
+- Collision detection
+- HP-based enemy resistance
+- Score calculation
+
+## 🖥️ Technical Details
+
+### 🎯 Performance Considerations
+- Efficient thread management
+- Optimized memory usage
+- Minimal screen flickering
+- Resource cleanup
+
+### ⚙️ Configuration Options
+- Customizable screen dimensions
+- Adjustable enemy limits
+- Configurable time steps
+- Memory size settings
+
+### 🐛 Debug Features
+- Memory state monitoring
+- Real-time performance stats
+- Error logging
+- State visualization
+
+## 📝 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
